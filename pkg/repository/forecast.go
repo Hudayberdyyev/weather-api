@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Hudayberdyyev/weather_api/models"
 	"github.com/jackc/pgx"
@@ -31,4 +32,16 @@ func (r *ForecastPostgres) GetCities() (*[]models.Regions, error) {
 		res = append(res, region)
 	}
 	return &res, nil
+}
+
+func (r *ForecastPostgres) Create(regionId int, forecast *models.OwmResponse) error {
+	var unixTimeUTC time.Time
+	for _, value := range forecast.ListData {
+		unixTimeUTC = time.Unix(value.Dt, 0)
+		query := fmt.Sprintf("insert into %s (\"temp\", feels_like, owm_id, humidity, wind_speed, pop, pressure, ts, region_id) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)", forecastsTable)
+		if _, err := r.db.Exec(query, value.MainData.Temp, value.MainData.FeelsLike, value.WeatherData[0].ID, value.MainData.Humidity, value.WindData.Speed, value.Pop, value.MainData.Pressure, unixTimeUTC, regionId); err != nil {
+			return err
+		}
+	}
+	return nil
 }

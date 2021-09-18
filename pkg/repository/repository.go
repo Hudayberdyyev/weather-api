@@ -7,6 +7,7 @@ import (
 
 type Forecast interface {
 	GetCities() (*[]models.Regions, error)
+	Create(regionId int, forecast *models.OwmResponse) error
 }
 
 type Repository struct {

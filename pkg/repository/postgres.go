@@ -8,6 +8,7 @@ import (
 
 const (
 	regionsTextTable = "regions_text"
+	forecastsTable   = "forecasts"
 )
 
 type Config struct {

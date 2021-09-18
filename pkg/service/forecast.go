@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/Hudayberdyyev/weather_api/models"
 	"github.com/Hudayberdyyev/weather_api/pkg/repository"
@@ -47,12 +48,12 @@ func (s *ForecastService) Update() error {
 
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
-			log.Fatal(err)
+			logrus.Fatal(err)
 		}
 
 		res, getErr := spaceClient.Do(req)
 		if getErr != nil {
-			log.Fatal(getErr)
+			logrus.Fatal(getErr)
 		}
 
 		if res.Body != nil {
@@ -61,15 +62,20 @@ func (s *ForecastService) Update() error {
 
 		body, readErr := ioutil.ReadAll(res.Body)
 		if readErr != nil {
-			log.Fatal(readErr)
+			logrus.Fatal(readErr)
 		}
 
 		var result models.OwmResponse
 
 		jsonErr := json.Unmarshal(body, &result)
 		if jsonErr != nil {
-			log.Fatal(jsonErr)
+			logrus.Fatal(jsonErr)
 		}
+
+		if err = s.repo.Create(value.RegionId, &result); err != nil {
+			return err
+		}
+		logrus.Println(value, "ok")
 	}
 
 	return nil
