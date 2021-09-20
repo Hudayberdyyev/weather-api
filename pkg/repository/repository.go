@@ -8,6 +8,8 @@ import (
 type Forecast interface {
 	GetCities() (*[]models.Regions, error)
 	Create(regionId int, forecast *models.OwmResponse) error
+	DeleteOld(regionId int, ts int64) error
+	DeleteEarlyCurrentDate() error
 }
 
 type Repository struct {

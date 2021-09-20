@@ -45,3 +45,21 @@ func (r *ForecastPostgres) Create(regionId int, forecast *models.OwmResponse) er
 	}
 	return nil
 }
+
+func (r *ForecastPostgres) DeleteOld(regionId int, ts int64) error {
+	unixTimeUTC := time.Unix(ts, 0)
+	query := fmt.Sprintf("delete from %s where ts > $1 and region_id = $2", forecastsTable)
+	if _, err := r.db.Exec(query, unixTimeUTC, regionId); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ForecastPostgres) DeleteEarlyCurrentDate() error {
+	currentTime := time.Now()
+	query := fmt.Sprintf("delete from %s where ts < $1", forecastsTable)
+	if _, err := r.db.Exec(query, currentTime); err != nil {
+		return err
+	}
+	return nil
+}
