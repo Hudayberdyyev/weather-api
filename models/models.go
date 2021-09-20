@@ -60,7 +60,7 @@ type City struct {
 }
 
 type WeatherInfo struct {
-	Dt          int       `json:"dt"`
+	Dt          int64     `json:"dt"`
 	MainData    Main      `json:"main"`
 	WeatherData []Weather `json:"weather"`
 	CloudsData  Clouds    `json:"clouds"`

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/Hudayberdyyev/weather_api/configs"
 	"github.com/Hudayberdyyev/weather_api/pkg/repository"
 	"github.com/Hudayberdyyev/weather_api/pkg/service"
@@ -9,7 +11,7 @@ import (
 )
 
 const (
-	TickerHours = 12
+	TickerHours = 2
 )
 
 func main() {
@@ -37,50 +39,12 @@ func main() {
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 
-	// ticker := time.NewTicker(time.Duration(TickerHours) * time.Hour)
+	ticker := time.NewTicker(time.Duration(TickerHours) * time.Hour)
 
-	// for _ = range ticker.C {
-	if err := services.Forecast.Update(); err != nil {
-		logrus.Fatalf("error with update forecasts: %s", err.Error())
+	for ; true; <-ticker.C {
+		if err := services.Forecast.Update(); err != nil {
+			logrus.Fatalf("error with update forecasts: %s", err.Error())
+		}
 	}
-	// }
 
-	// for _, value := range cities {
-	// url := URL
-	// url = strings.Replace(url, "{city name}", value, 1)
-	// url = strings.Replace(url, "{API key}", APIKey, 1)
-	// fmt.Println(url)
-
-	// spaceClient := http.Client{
-	// 	Timeout: time.Second * 5, // Timeout after 2 seconds
-	// }
-
-	// req, err := http.NewRequest(http.MethodGet, url, nil)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// res, getErr := spaceClient.Do(req)
-	// if getErr != nil {
-	// 	log.Fatal(getErr)
-	// }
-
-	// if res.Body != nil {
-	// 	defer res.Body.Close()
-	// }
-
-	// body, readErr := ioutil.ReadAll(res.Body)
-	// if readErr != nil {
-	// 	log.Fatal(readErr)
-	// }
-
-	// var result models.OwmResponse
-
-	// jsonErr := json.Unmarshal(body, &result)
-	// if jsonErr != nil {
-	// 	log.Fatal(jsonErr)
-	// }
-
-	// 	fmt.Println(value, "ok")
-	// }
 }
